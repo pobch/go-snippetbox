@@ -2,7 +2,8 @@ package main
 
 import "net/http"
 
-func (app *application) routes() *http.ServeMux {
+// In the book, this func returns `http.Handler` interface
+func (app *application) routes() http.HandlerFunc {
 	mux := http.NewServeMux()
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
@@ -12,5 +13,5 @@ func (app *application) routes() *http.ServeMux {
 	mux.HandleFunc("/snippet/view", app.snippetView)
 	mux.HandleFunc("/snippet/create", app.snippetCreate)
 
-	return mux
+	return app.recoverPanic(app.logRequest(secureHeaders(mux)))
 }
